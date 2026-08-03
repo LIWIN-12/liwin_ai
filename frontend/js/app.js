@@ -1,8 +1,8 @@
 // ======================================================
 // LIWIN AI OS
 // ======================================================
-
-const API = "http://127.0.0.1:8000/chat";
+const API = "/chat";
+//const API = "http://127.0.0.1:8000/chat";
 
 const chatBox = document.getElementById("chatBox");
 const messageInput = document.getElementById("message");

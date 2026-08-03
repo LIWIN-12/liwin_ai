@@ -89,7 +89,10 @@ Instructions:
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        import traceback
+
+        traceback.print_exc()
+
+        return {
+            "answer": f"DEBUG ERROR:\n{type(e).__name__}\n{str(e)}"
+        }
