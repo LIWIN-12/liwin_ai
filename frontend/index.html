@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Liwin AI OS</title>
+
+    <!-- Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+
+    <!-- Background -->
+
+    <!-- ========================= -->
+
+    <div class="background">
+
+        <div class="grid"></div>
+
+        <div class="noise"></div>
+
+        <div class="scanlines"></div>
+
+        <div class="glow glow1"></div>
+
+        <div class="glow glow2"></div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+
+    <!-- APP -->
+
+    <!-- ========================= -->
+
+    <div class="app">
+
+
+
+
+        <!-- ========================= -->
+
+        <!-- TOP BAR -->
+
+        <!-- ========================= -->
+
+        <header class="topbar">
+
+            <div class="left-status">
+
+                <span>
+
+                    ⚡ 120 FPS
+
+                </span>
+
+                <span>
+
+                    PING : 12ms
+
+                </span>
+
+            </div>
+
+
+            <div class="logo">
+
+                LIWIN AI OS
+
+                <span>
+
+                    v1.0
+
+                </span>
+
+            </div>
+
+
+            <div class="right-status">
+
+                <div class="online">
+
+                    <div class="led"></div>
+
+                    ONLINE
+
+                </div>
+
+                <i class="fa-solid fa-gear"></i>
+
+            </div>
+
+        </header>
+
+
+
+
+
+
+        <!-- ========================= -->
+
+        <!-- CONTENT -->
+
+        <!-- ========================= -->
+
+        <div class="content">
+
+
+
+
+
+            <!-- ========================= -->
+
+            <!-- PROFILE -->
+
+            <!-- ========================= -->
+
+            <aside class="profile">
+
+                <h2>
+
+                    TACTICAL PROFILE
+
+                </h2>
+
+                <div class="avatar">
+
+                    <img src="assets/avatar.png" alt="avatar">
+
+                </div>
+
+                <h1>
+
+                    LIWIN AI
+
+                </h1>
+
+                <p>
+
+                    Personal AI Assistant
+
+                </p>
+
+                <div class="divider"></div>
+
+                <div class="stats">
+
+                    <div>
+
+                        <label>
+
+                            Knowledge
+
+                        </label>
+
+                        <span>
+
+                            17 Docs
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <label>
+
+                            Projects
+
+                        </label>
+
+                        <span>
+
+                            8
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <label>
+
+                            Experience
+
+                        </label>
+
+                        <span>
+
+                            1 year
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <label>
+
+                            Status
+
+                        </label>
+
+                        <span class="green">
+
+                            ONLINE
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+
+
+
+
+
+            <!-- ========================= -->
+
+            <!-- TERMINAL -->
+
+            <!-- ========================= -->
+
+            <section class="terminal">
+
+                <div class="terminal-header">
+
+                    AI TERMINAL
+
+                </div>
+
+                <div id="chatBox" class="terminal-body">
+
+
+
+
+                    <div class="system">
+
+                        <span>
+
+                            [SYSTEM]
+
+                        </span>
+
+                        Liwin AI initialized successfully.
+
+                    </div>
+
+
+
+                    <div class="system">
+
+                        <span>
+
+                            [SYSTEM]
+
+                        </span>
+
+                        Knowledge Base Loaded.
+
+                    </div>
+
+
+
+                    <div class="ai">
+
+                        <span>
+
+                            [LIWIN AI]
+
+                        </span>
+
+                        Hello!
+
+                        <br><br>
+
+                        I'm Liwin AI.
+
+                        <br><br>
+
+                        Ask me anything about my
+
+                        experience,
+
+                        projects,
+
+                        skills,
+
+                        education,
+
+                        resume,
+
+                        or achievements.
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <div class="terminal-input">
+
+                    <div class="prompt">
+
+                        >
+
+                    </div>
+
+                    <textarea id="message" placeholder="Ask Liwin AI anything..." rows="1"></textarea>
+
+                    <button id="sendBtn">
+
+                        TRANSMIT ⚡
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+
+
+
+
+        <!-- ========================= -->
+
+        <!-- FOOTER -->
+
+        <!-- ========================= -->
+
+        <footer>
+
+            <div>
+
+                MODEL
+
+                <span>
+
+                    Gemini
+
+                </span>
+
+            </div>
+
+            <div>
+
+                KB
+
+                <span>
+
+                    READY
+
+                </span>
+
+            </div>
+
+            <div>
+
+                API
+
+                <span>
+
+                    ONLINE
+
+                </span>
+
+            </div>
+
+            <div>
+
+                FASTAPI
+
+                <span>
+
+                    CONNECTED
+
+                </span>
+
+            </div>
+
+            <div>
+
+                TIME
+
+                <span id="clock">
+
+                    00:00
+
+                </span>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
