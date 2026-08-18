@@ -1,225 +1,359 @@
-// ======================================================
-// LIWIN AI OS
-// ======================================================
+/* =========================================================
+   LIWIN AI
+   Clean Chat Interface
+========================================================= */
+
 const API = "/chat";
-//const API = "http://127.0.0.1:8000/chat";
+const SESSION_KEY = "liwin_ai_session_id";
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+let SESSION_ID = localStorage.getItem(SESSION_KEY);
+
+if (!SESSION_ID) {
+    SESSION_ID = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, SESSION_ID);
+}
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
 
 const chatBox = document.getElementById("chatBox");
 const messageInput = document.getElementById("message");
 const sendBtn = document.getElementById("sendBtn");
-const clock = document.getElementById("clock");
+const newChatBtn = document.getElementById("newChatBtn");
 
-// ======================================================
-// CLOCK
-// ======================================================
 
-setInterval(() => {
-    const now = new Date();
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
-    clock.innerHTML =
-        now.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* New conversation button */
+    if (newChatBtn) {
+        newChatBtn.addEventListener("click", newConversation);
+    }
+
+    /* Send button */
+    if (sendBtn) {
+        sendBtn.addEventListener("click", send);
+    }
+
+    /* Enter = send
+       Shift + Enter = new line */
+    if (messageInput) {
+        messageInput.addEventListener("keydown", (event) => {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+                event.preventDefault();
+                send();
+            }
         });
+    }
 
-}, 1000);
+    /* First welcome message */
+    showWelcomeMessage();
+
+    /* Focus input */
+    if (messageInput) {
+        messageInput.focus();
+    }
+});
 
 
-// ======================================================
-// TIMESTAMP
-// ======================================================
+/* =========================================================
+   TIME
+========================================================= */
 
-function time() {
+function getTime() {
 
     return new Date().toLocaleTimeString([], {
         hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
+        minute: "2-digit"
     });
 
 }
 
 
-// ======================================================
-// TERMINAL MESSAGE
-// ======================================================
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-function addMessage(type, title, text) {
+function escapeHTML(text) {
 
     const div = document.createElement("div");
 
-    div.className = type;
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+
+/* =========================================================
+   FORMAT AI RESPONSE
+========================================================= */
+
+function formatAIResponse(text) {
+
+    if (!text) {
+        return "";
+    }
+
+    let formatted = escapeHTML(text);
+
+    /*
+     * Basic markdown support
+     */
+
+    /* Bold */
+    formatted = formatted.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    /* Inline code */
+    formatted = formatted.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+    /* Bullet points */
+    formatted = formatted.replace(
+        /^\s*[-•]\s+(.+)$/gm,
+        "• $1"
+    );
+
+    /* New lines */
+    formatted = formatted.replace(
+        /\n/g,
+        "<br>"
+    );
+
+    return formatted;
+}
+
+
+/* =========================================================
+   ADD USER MESSAGE
+========================================================= */
+
+function addUserMessage(text) {
+
+    const div = document.createElement("div");
+
+    div.className = "user";
 
     div.innerHTML = `
-
-        <small>${time()}</small><br><br>
-
-        <span>[${title}]</span>
-
-        <br><br>
-
-        ${text}
-
+        <span>YOU</span>
+        <small>${getTime()}</small>
+        <div class="message-content">
+            ${escapeHTML(text)}
+        </div>
     `;
 
     chatBox.appendChild(div);
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-
+    scrollToBottom();
 }
 
 
+/* =========================================================
+   ADD AI MESSAGE
+========================================================= */
 
-// ======================================================
-// TYPEWRITER
-// ======================================================
-
-function typeMessage(text) {
+function addAIMessage(text) {
 
     const div = document.createElement("div");
 
     div.className = "ai";
 
     div.innerHTML = `
-
-        <small>${time()}</small><br><br>
-
-        <span>[LIWIN AI]</span>
-
-        <br><br>
-
-        <p class="typing"></p>
-
+        <span>LIWIN AI</span>
+        <small>${getTime()}</small>
+        <div class="message-content">
+            ${formatAIResponse(text)}
+        </div>
     `;
 
     chatBox.appendChild(div);
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    const target = div.querySelector(".typing");
-
-    let i = 0;
-
-    const speed = 10;
-
-    function write() {
-
-        if (i < text.length) {
-
-            target.innerHTML += text.charAt(i);
-
-            i++;
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            setTimeout(write, speed);
-
-        }
-
-    }
-
-    write();
-
+    scrollToBottom();
 }
 
 
+/* =========================================================
+   THINKING INDICATOR
+========================================================= */
 
-// ======================================================
-// BOOT SEQUENCE
-// ======================================================
+function showThinking() {
 
-window.onload = () => {
+    removeThinking();
 
-    setTimeout(() => {
+    const div = document.createElement("div");
 
-        addMessage(
-            "system",
-            "SYSTEM",
-            "Initializing Liwin AI Operating System..."
-        );
+    div.className = "ai thinking-message";
 
-    }, 500);
+    div.id = "thinking";
 
-    setTimeout(() => {
+    div.innerHTML = `
+        <span>LIWIN AI</span>
+        <div class="thinking">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
 
-        addMessage(
-            "system",
-            "SYSTEM",
-            "Loading ChromaDB..."
-        );
+    chatBox.appendChild(div);
 
-    }, 1500);
-
-    setTimeout(() => {
-
-        addMessage(
-            "system",
-            "SYSTEM",
-            "Connecting Gemini..."
-        );
-
-    }, 2500);
-
-    setTimeout(() => {
-
-        addMessage(
-            "system",
-            "SYSTEM",
-            "Knowledge Base Ready."
-        );
-
-    }, 3500);
-
-    setTimeout(() => {
-
-        addMessage(
-            "ai",
-            "LIWIN AI",
-            "Hello! I'm Liwin AI. Ask me anything about my experience, projects, skills or career."
-        );
-
-    }, 4500);
-
-};
+    scrollToBottom();
+}
 
 
+function removeThinking() {
+
+    const thinking = document.getElementById("thinking");
+
+    if (thinking) {
+        thinking.remove();
+    }
+}
 
 
-// ======================================================
-// SEND
-// ======================================================
+/* =========================================================
+   ERROR MESSAGE
+========================================================= */
+
+function showError(message) {
+
+    const div = document.createElement("div");
+
+    div.className = "system error-message";
+
+    div.innerHTML = `
+        <span>LIWIN AI</span>
+        <div class="message-content">
+            ${escapeHTML(message)}
+        </div>
+    `;
+
+    chatBox.appendChild(div);
+
+    scrollToBottom();
+}
+
+
+/* =========================================================
+   WELCOME MESSAGE
+========================================================= */
+
+function showWelcomeMessage() {
+
+    if (!chatBox) {
+        return;
+    }
+
+    chatBox.innerHTML = "";
+
+    addAIMessage(
+        "Hi! I'm Liwin AI. Ask me about my projects, skills, experience, or career."
+    );
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToBottom() {
+
+    if (!chatBox) {
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+}
+
+
+/* =========================================================
+   SET INPUT STATE
+========================================================= */
+
+function setInputState(disabled) {
+
+    if (messageInput) {
+        messageInput.disabled = disabled;
+    }
+
+    if (sendBtn) {
+        sendBtn.disabled = disabled;
+    }
+
+    if (disabled) {
+
+        sendBtn.style.opacity = "0.6";
+        sendBtn.style.cursor = "not-allowed";
+
+    } else {
+
+        sendBtn.style.opacity = "";
+        sendBtn.style.cursor = "";
+
+    }
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
 
 async function send() {
 
+    if (!messageInput) {
+        return;
+    }
+
     const question = messageInput.value.trim();
 
-    if (question === "") return;
+    /* Don't send empty messages */
+    if (!question) {
+        return;
+    }
 
-    addMessage(
+    /* Prevent multiple requests */
+    if (sendBtn && sendBtn.disabled) {
+        return;
+    }
 
-        "user",
 
-        "YOU",
+    /* Show user message */
 
-        question
+    addUserMessage(question);
 
-    );
+
+    /* Clear input */
 
     messageInput.value = "";
 
 
+    /* Disable input */
 
-    addMessage(
+    setInputState(true);
 
-        "system",
 
-        "SYSTEM",
+    /* Show thinking */
 
-        "Searching Knowledge Base..."
-
-    );
-
+    showThinking();
 
 
     try {
@@ -229,55 +363,172 @@ async function send() {
             method: "POST",
 
             headers: {
-
                 "Content-Type": "application/json"
-
             },
 
             body: JSON.stringify({
-
-                question: question
-
+                question: question,
+                session_id: SESSION_ID
             })
 
         });
 
+
+        /* Handle HTTP errors */
+
+        if (!response.ok) {
+
+            let errorMessage =
+                "Something went wrong while contacting Liwin AI.";
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+                if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                }
+
+            } catch {
+                /* Ignore invalid error response */
+            }
+
+            throw new Error(errorMessage);
+        }
+
+
+        /* Parse response */
+
         const data = await response.json();
 
-        typeMessage(data.answer);
+
+        /* Remove thinking */
+
+        removeThinking();
+
+
+        /* Validate AI response */
+
+        if (
+            !data ||
+            typeof data.answer !== "string" ||
+            !data.answer.trim()
+        ) {
+
+            throw new Error(
+                "Liwin AI returned an empty response."
+            );
+        }
+
+
+        /* Show AI answer */
+
+        addAIMessage(data.answer);
 
     }
 
-    catch (e) {
 
-        addMessage(
+    catch (error) {
 
-            "system",
+        console.error(
+            "Liwin AI request failed:",
+            error
+        );
 
-            "ERROR",
 
-            "Unable to connect to Liwin AI."
+        removeThinking();
 
+
+        showError(
+            error.message ||
+            "Unable to connect to Liwin AI. Please try again."
         );
 
     }
 
+
+    finally {
+
+        setInputState(false);
+
+        messageInput.focus();
+
+    }
 }
 
 
+/* =========================================================
+   NEW CONVERSATION
+========================================================= */
 
-// ======================================================
+function newConversation() {
 
-sendBtn.onclick = send;
+    /*
+     * Generate a completely new session ID.
+     * This separates the new conversation from
+     * the previous memory session.
+     */
 
-messageInput.addEventListener("keydown", (e) => {
+    SESSION_ID = crypto.randomUUID();
 
-    if (e.key === "Enter" && !e.shiftKey) {
+    localStorage.setItem(
+        SESSION_KEY,
+        SESSION_ID
+    );
 
-        e.preventDefault();
 
-        send();
+    /* Remove old messages */
 
+    if (chatBox) {
+        chatBox.innerHTML = "";
     }
 
-});
+
+    /* Clear input */
+
+    if (messageInput) {
+        messageInput.value = "";
+    }
+
+
+    /* Reset input */
+
+    setInputState(false);
+
+
+    /* Welcome message */
+
+    showWelcomeMessage();
+
+
+    /* Focus */
+
+    if (messageInput) {
+        messageInput.focus();
+    }
+}
+
+
+/* =========================================================
+   OPTIONAL: CTRL/CMD + ENTER
+========================================================= */
+
+if (messageInput) {
+
+    messageInput.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                send();
+            }
+        }
+    );
+}

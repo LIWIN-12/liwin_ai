@@ -20,3 +20,16 @@ Thumbs.db
 # Python cache
 .pytest_cache/
 .mypy_cache/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Vector database
+
+chroma_data/
+chromadb/
+
+# Local data
+data/
